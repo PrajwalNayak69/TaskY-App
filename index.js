@@ -31,7 +31,7 @@ const newCard = ({
     <span class="badge bg-primary">${taskType}</span>
   </div>
   <div class="card-footer text-muted">
-    <button type="button" class="btn btn-outline-primary float-end">
+    
     <button type="button" id=${id} class="btn btn-outline-primary float-end">
       Open Task
     </button>
@@ -108,8 +108,8 @@ const editCard = (event) => {
   submitButton.setAttribute(
     "onclick",
     "saveEditchanges.apply(this, arguments)"
-  );
-  submitButton.innerHTML = "Save Changes";
+    );
+    submitButton.innerHTML = "Save Changes";
 };
 
 const saveEditchanges = (event) => {
@@ -130,6 +130,7 @@ const saveEditchanges = (event) => {
   let taskDescription = parentElement.childNodes[5].childNodes[3];
   let taskType = parentElement.childNodes[5].childNodes[5];
   let submitButton = parentElement.childNodes[7].childNodes[1];
+
 
   const updatedData = {
     taskTitle: taskTitle.innerHTML,
