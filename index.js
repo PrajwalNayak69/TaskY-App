@@ -1,7 +1,9 @@
-// Parent element to store cards
-const taskContainer = document.querySelector(".task__container");
-// Global Store
-let globalStore = [];
+const taskContainer= document.querySelector(".task__container");
+const modalContainer = document.querySelector(".openModalBody");
+
+//global store
+let GlobalStore = [];
+
 const newCard = ({
   id,
   imageUrl,
@@ -38,118 +40,192 @@ const newCard = ({
   </div>
 </div>
 </div>`;
-const loadInitialTaskCards = () => {
-  // access localstorage
-  const getInitialData = localStorage.getItem("tasky"); // null
-  if (!getInitialData) return;
-  // convert stringified-object to object
-  const { cards } = JSON.parse(getInitialData);
-  // map around the array to generate HTML card and inject it to DOM
-  cards.map((cardObject) => {
-    const createNewCard = newCard(cardObject);
-    taskContainer.insertAdjacentHTML("beforeend", createNewCard);
-    globalStore.push(cardObject);
+
+const openTaskBody=({ imgUrl, taskTitle, taskType,taskDes}) =>`<div class="mb-3 img__Container">
+<img src="${imgUrl}" style="width:450px; heigth:450px;" alt="picture"/>
+</div>
+<div class="mb-3 title__Container">
+<h1>${taskTitle}</h1>
+</div>
+<div class="mb-3 title__Des">
+<p> ${taskDes} </p>
+</div>
+<div class="mb-3 badge__Container">
+<span class="badge bg-primary">${taskType}</span>
+</div>`;
+
+
+const updateLocalStorage =() => localStorage.setItem("tasky", JSON.stringify({cards: GlobalStore}));
+
+const loadInitialCardData =() =>{
+  const getInitialData = localStorage.tasky;
+  if(!getInitialData)return;
+
+  const {cards} = JSON.parse(getInitialData);
+
+  cards.map((card) =>{
+    const createNewCard = newCard(card);
+
+  taskContainer.insertAdjacentHTML("beforeend",createNewCard);
+  GlobalStore.push(card);
+
   });
 };
-const updateLocalStorage = () =>
-  localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
-const saveChanges = () => {
-  const taskData = {
-    id: `${Date.now()}`, // unique number for card id
-    imageUrl: document.getElementById("imageurl").value,
-    taskTitle: document.getElementById("tasktitle").value,
-    taskType: document.getElementById("tasktype").value,
-    taskDescription: document.getElementById("taskdescription").value,
-  };
-  // HTML code
-  const createNewCard = newCard(taskData);
-  taskContainer.insertAdjacentHTML("beforeend", createNewCard);
-  globalStore.push(taskData);
-  // add to localstorage
-  updateLocalStorage();
+
+
+const saveChanges = () =>{
+    const taskdata={
+        id: `${Date.now()}`, //unique id genration
+        imgUrl:document.getElementById("imgurl").value,
+        taskTitle:document.getElementById("tasktitle").value,
+        taskType:document.getElementById("tasktype").value,
+        taskDes:document.getElementById("taskdes").value,
+    };
+
+    console.log(taskdata);
+    const createNewCard = newCard(taskdata);
+
+taskContainer.insertAdjacentHTML("beforeend",createNewCard);
+GlobalStore.push(taskdata);
+updateLocalStorage();
+
+
 };
-const deleteCard = (event) => {
-  // id
+
+
+
+
+const deleteCard =(event) =>{
+  //id
   event = window.event;
-  const targetID = event.target.id;
-  const tagname = event.target.tagName; // BUTTON
-  // search the globalStore, remove the object which matches with the id
-  globalStore = globalStore.filter((cardObject) => cardObject.id !== targetID);
+  const targetId = event.target.id;
+  const tagname = event.target.tagName;
+  //search globalStore array
+
+  GlobalStore = GlobalStore.filter(
+    (card) => card.id !== targetId
+  );
   updateLocalStorage();
+ // window.location.reload(true);
+
+
   // access DOM to remove them
+
   if (tagname === "BUTTON") {
     // task__container
     return taskContainer.removeChild(
       event.target.parentNode.parentNode.parentNode // col-lg-4
     );
   }
+
   // task__container
   return taskContainer.removeChild(
     event.target.parentNode.parentNode.parentNode.parentNode // col-lg-4
   );
-};
-const editCard = (event) => {
-  event = window.event;
-  const targetID = event.target.id;
-  const tagname = event.target.tagName;
-  let parentElement;
-  if (tagname === "BUTTON") {
-    parentElement = event.target.parentNode.parentNode;
-  } else {
-    parentElement = event.target.parentNode.parentNode.parentNode;
-  }
-  let taskTitle = parentElement.childNodes[5].childNodes[1];
-  let taskDescription = parentElement.childNodes[5].childNodes[3];
-  let taskType = parentElement.childNodes[5].childNodes[5];
-  let submitButton = parentElement.childNodes[7].childNodes[1];
-  taskTitle.setAttribute("contenteditable", "true");
-  taskDescription.setAttribute("contenteditable", "true");
-  taskType.setAttribute("contenteditable", "true");
-  submitButton.setAttribute(
-    "onclick",
-    "saveEditchanges.apply(this, arguments)"
-    );
-    submitButton.innerHTML = "Save Changes";
+
+
 };
 
-const saveEditchanges = (event) => {
-  event = window.event;
-  const targetID = event.target.id;
-  console.log(targetID);
-  const tagname = event.target.tagName;
 
-  let parentElement;
+
+//Edit
+
+const editCard =(event) =>{
+
+  event = window.event;
+  tagname= event.target.tagName;
+
+  //make fields editable
+  let parent;
 
   if (tagname === "BUTTON") {
-    parentElement = event.target.parentNode.parentNode;
-  } else {
-    parentElement = event.target.parentNode.parentNode.parentNode;
+    // task__container
+    
+     parent= event.target.parentNode.parentNode.parentNode // col-lg-4
+    
+  }else{ parent= event.target.parentNode.parentNode.parentNode.parentNode};
+  const cardBody=parent.querySelector('#cardBody');
+  var fields=cardBody.querySelectorAll(".editable");
+
+  for(let i= 0; i<fields.length; i++){
+    fields[i].setAttribute("contenteditable","true");
   }
 
-  let taskTitle = parentElement.childNodes[5].childNodes[1];
-  let taskDescription = parentElement.childNodes[5].childNodes[3];
-  let taskType = parentElement.childNodes[5].childNodes[5];
-  let submitButton = parentElement.childNodes[7].childNodes[1];
+  //transform open task button to save changes button
+
+  saveButton = parent.querySelector(".card-footer").querySelector("button");
+  saveButton.setAttribute("onClick","esaveChanges.apply(this, arguments)");
+  saveButton.setAttribute("data-bs-toggle", "");
+  saveButton.setAttribute("data-bs-target","");
+
+  saveButton.textContent="save Changes";
+};
 
 
-  const updatedData = {
-    taskTitle: taskTitle.innerHTML,
-    taskType: taskType.innerHTML,
-    taskDescription: taskDescription.innerHTML,
+//save changes after editting
+
+const esaveChanges=(event) =>{
+  event = window.event;
+  const targetId = event.target.id;
+  const targetname = event.target.tagName;
+
+  //make fields non editable
+  const parent= event.target.parentNode.parentNode;
+  console.log(parent);
+  const cardBody=parent.querySelector('#cardBody');
+  
+  var fields=cardBody.querySelectorAll(".editable");
+
+  for(let i= 0; i<fields.length; i++){
+    fields[i].setAttribute("contenteditable","false");
   };
 
-  globalStore = globalStore.map((task) => {
-    if (task.id === targetID) {
-      return {
-        id: task.id,
-        imageUrl: task.imageUrl,
-        taskTitle: updatedData.taskTitle,
-        taskType: updatedData.taskType,
-        taskDescription: updatedData.taskDescription,
-      };
-    }
-    return task; // Important
-  });
+  //save changes
 
+  ctaskTitle = cardBody.querySelector(".card-title").textContent;
+  ctaskDes = cardBody.querySelector(".card-text").textContent;
+  ctaskType = cardBody.querySelector(".badge").textContent;
+
+  GlobalStore.forEach((card)=>{
+  if(card.id == targetId){
+    console.log("got in the if block.")
+    card.taskTitle =ctaskTitle;
+    card.taskType =ctaskType;
+    card.taskDes = ctaskDes;
+    console.log(card);
+  };
+  })
+
+  console.log(GlobalStore);
   updateLocalStorage();
+
+  //change button back to Open Task
+  openButton = parent.querySelector(".card-footer").querySelector("button");
+  openButton.setAttribute("onClick","opentask.apply(this, arguments)");
+  saveButton.setAttribute("data-bs-toggle", "modal");
+  saveButton.setAttribute("data-bs-target","#openModal");
+
+  openButton.textContent="Open task";
+};
+
+
+const opentask=(event) =>{
+  event = window.event;
+  const targetId = event.target.id;
+  const parent= event.target.parentNode.parentNode;
+  const cardBody=parent.querySelector('#cardBody');
+
+  const opentaskobj ={
+    imgUrl: cardBody.querySelector(".card-img-top").getAttribute('src'),
+    taskTitle: cardBody.querySelector(".card-title").textContent,
+    taskType: cardBody.querySelector(".badge").textContent,
+    taskDes: cardBody.querySelector(".card-text").textContent,
+  }
+
+  const modalContext= openTaskBody(opentaskobj);
+  console.log(opentaskobj);
+
+  modalContainer.insertAdjacentHTML("beforeend",modalContext);
+  console.log(modalContainer);
+
 };
