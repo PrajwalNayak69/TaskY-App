@@ -4,54 +4,25 @@ const modalContainer = document.querySelector(".openModalBody");
 //global store
 let GlobalStore = [];
 
-const newCard = ({
-  id,
-  imageUrl,
-  taskTitle,
-  taskDescription,
-  taskType,
-}) => `<div class="col-md-6 col-lg-4" id=${id}>
+const newCard=({id,imgUrl, taskTitle, taskType,taskDes}) =>`<div class="col-md-6 col-lg-4" id=${id}>
 <div class="card">
   <div class="card-header d-flex justify-content-end gap-2">
-    <button type="button" id=${id} class="btn btn-outline-success" onclick="editCard.apply(this, arguments)">
-      <i class="fas fa-pencil-alt" id=${id} onclick="editCard.apply(this, arguments)" ></i>
-    </button>
-    <button type="button" id=${id} class="btn btn-outline-danger" onclick="deleteCard.apply(this, arguments)">
-      <i class="fas fa-trash-alt" id=${id} onclick="deleteCard.apply(this, arguments)"></i>
-    </button>
+    <button type="button" class="btn btn-outline-success" id=${id} onClick="editCard.apply(this, arguments)">
+    <i class="fas fa-pencil-alt" id=${id} onClick="editCard.apply(this, arguments)"></i></button>
+    <button type="button" class="btn btn-outline-danger" id=${id} onclick="deleteCard.apply(this, arguments)">
+    <i class="fas fa-trash" id=${id} onclick="deleteCard.apply(this, arguments)"></i></button>
   </div>
-  <img
-    src=${imageUrl}
-    class="card-img-top"
-    alt="..."
-  />
-  <div class="card-body">
-    <h5 class="card-title">${taskTitle}</h5>
-    <p class="card-text">
-      ${taskDescription}
-    </p>
-    <span class="badge bg-primary">${taskType}</span>
+  <div class="card-body container" id="cardBody">
+    <img class="card-img-top mb-3" alt="photo" src=${imgUrl}/>
+    <h5 class="card-title editable" >${taskTitle}</h5>
+    <p class="card-text editable" >${taskDes}</p>
+    <span class="badge bg-primary editable" >${taskType}</span>
   </div>
-  <div class="card-footer text-muted">
-    
-    <button type="button" id=${id} class="btn btn-outline-primary float-end">
-      Open Task
-    </button>
+  <div class="card-footer text-muted d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-primary" id=${id} onclick="opentask.apply(this, arguments)" data-bs-toggle="modal" data-bs-target="#openModal" >
+    Open Task</button>
   </div>
 </div>
-</div>`;
-
-const openTaskBody=({ imgUrl, taskTitle, taskType,taskDes}) =>`<div class="mb-3 img__Container">
-<img src="${imgUrl}" style="width:450px; heigth:450px;" alt="picture"/>
-</div>
-<div class="mb-3 title__Container">
-<h1>${taskTitle}</h1>
-</div>
-<div class="mb-3 title__Des">
-<p> ${taskDes} </p>
-</div>
-<div class="mb-3 badge__Container">
-<span class="badge bg-primary">${taskType}</span>
 </div>`;
 
 
