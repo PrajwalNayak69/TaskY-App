@@ -1,5 +1,5 @@
 const taskContainer= document.querySelector(".task__container");
-const modalContainer = document.querySelector(".openModalBody");
+const modalContainer = document.querySelector(".openTaskBody");
 
 //global store
 let GlobalStore = [];
@@ -13,7 +13,11 @@ const newCard=({id,imgUrl, taskTitle, taskType,taskDes}) =>`<div class="col-md-6
     <i class="fas fa-trash" id=${id} onclick="deleteCard.apply(this, arguments)"></i></button>
   </div>
   <div class="card-body container" id="cardBody">
-    <img class="card-img-top mb-3" alt="photo" src=${imgUrl}/>
+  <img 
+  src=${imgUrl}
+  class="card-img-top rounded-10" 
+  alt="User Image"
+>
     <h5 class="card-title editable" >${taskTitle}</h5>
     <p class="card-text editable" >${taskDes}</p>
     <span class="badge bg-primary editable" >${taskType}</span>
@@ -24,6 +28,33 @@ const newCard=({id,imgUrl, taskTitle, taskType,taskDes}) =>`<div class="col-md-6
   </div>
 </div>
 </div>`;
+
+
+const openTaskBody=({imgUrl, taskTitle, taskType,taskDes}) => `<div class="modal" tabindex="-1" id="openModal">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title">${taskTitle}</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+    <img 
+  src=${imgUrl}
+  class="card-img-top rounded-10" 
+  alt="User Image"
+>
+   
+    <p class="card-text " >${taskDes}</p>
+    <span class="badge bg-primary editable" >${taskType}</span>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      
+    </div>
+  </div>
+</div>
+</div>
+`;
 
 
 const updateLocalStorage =() => localStorage.setItem("tasky", JSON.stringify({cards: GlobalStore}));
@@ -60,6 +91,23 @@ taskContainer.insertAdjacentHTML("beforeend",createNewCard);
 GlobalStore.push(taskdata);
 updateLocalStorage();
 
+
+};
+
+
+
+const opentask = () =>{
+  const taskdata={
+    imgUrl: cardBody.querySelector(".card-img-top").getAttribute('src'),
+    taskTitle: cardBody.querySelector(".card-title").textContent,
+    taskType: cardBody.querySelector(".badge").textContent,
+    taskDes: cardBody.querySelector(".card-text").textContent,
+  };
+
+  console.log(taskdata);
+  const createNewmodal = openTaskBody(taskdata);
+
+  taskContainer.insertAdjacentHTML("beforeend", createNewmodal);
 
 };
 
@@ -180,23 +228,23 @@ const esaveChanges=(event) =>{
 };
 
 
-const opentask=(event) =>{
-  event = window.event;
-  const targetId = event.target.id;
-  const parent= event.target.parentNode.parentNode;
-  const cardBody=parent.querySelector('#cardBody');
+// const opentask=(event) =>{
+//   event = window.event;
+//   const targetId = event.target.id;
+//   const parent= event.target.parentNode.parentNode;
+//   const cardBody=parent.querySelector('#cardBody');
 
-  const opentaskobj ={
-    imgUrl: cardBody.querySelector(".card-img-top").getAttribute('src'),
-    taskTitle: cardBody.querySelector(".card-title").textContent,
-    taskType: cardBody.querySelector(".badge").textContent,
-    taskDes: cardBody.querySelector(".card-text").textContent,
-  }
+//   const opentaskobj ={
+//     imgUrl: cardBody.querySelector(".card-img-top").getAttribute('src'),
+//     taskTitle: cardBody.querySelector(".card-title").textContent,
+//     taskType: cardBody.querySelector(".badge").textContent,
+//     taskDes: cardBody.querySelector(".card-text").textContent,
+//   }
 
-  const modalContext= openTaskBody(opentaskobj);
-  console.log(opentaskobj);
+//   const modalContext= openTaskBody(opentaskobj);
+//   console.log(opentaskobj);
 
-  modalContainer.insertAdjacentHTML("beforeend",modalContext);
-  console.log(modalContainer);
+//   modalContainer.insertAdjacentHTML("beforeend",openTaskBody);
+//   console.log(modalContainer);
 
-};
+// };
